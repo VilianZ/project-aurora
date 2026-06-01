@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURORA - Live Feed</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="aurora-logo.png" alt="AURORA">
+            </div>
+
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="registered.html" class="nav-item">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Registered Faces</span>
+                </a>
+                <a href="attendance.html" class="nav-item">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Attendance</span>
+                </a>
+                <a href="live-feed.html" class="nav-item active">
+                    <i class="fas fa-video"></i>
+                    <span>Live Feed</span>
+                </a>
+
+            </nav>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h2>AURORA / <span style="color: #AEBD03;">Live Feed</span></h2>
+                </div>
+            </div>
+
+            <!-- Camera Feed -->
+            <div class="camera-container">
+                <div class="camera-header">
+                    <div class="camera-info">
+                        <h3>
+                            <i class="fas fa-video"></i>
+                            Main Camera
+                        </h3>
+                        <div class="camera-details" id="cameraDetails">Connecting...</div>
+                    </div>
+                    <div class="camera-controls">
+                        <span id="connectionStatus" style="
+                            display: inline-flex; align-items: center; gap: 6px;
+                            padding: 4px 12px; border-radius: 20px; font-size: 12px;
+                            background: rgba(255,165,0,0.2); color: #ffa500;
+                        ">
+                            <i class="fas fa-circle" style="font-size: 8px;"></i>
+                            Connecting
+                        </span>
+                        <button class="page-btn" id="fullscreenBtn">
+                            <i class="fas fa-expand"></i> Fullscreen
+                        </button>
+                    </div>
+                </div>
+
+                <div class="video-container" id="videoContainer">
+                    <img id="cameraFeed" alt="Live Feed"
+                        style="width: 100%; height: 100%; object-fit: contain; background: #000;">
+                    <div class="video-overlay">
+                        <div class="live-indicator" id="liveIndicator" style="opacity: 0.5;">
+                            LIVE REC
+                        </div>
+                        <div id="fpsDisplay"
+                            style="background: rgba(174,189,3,0.85); padding: 4px 12px; border-radius: 4px; font-size: 12px; color: #fff; font-weight: 600; letter-spacing: 0.5px;">
+                            -- FPS
+                        </div>
+                    </div>
+                    <div class="timestamp" id="currentTime"></div>
+                    <div class="scan-indicator" id="scanStatus"
+                        style="background: rgba(100,100,100,0.7);">WAITING FOR FEED</div>
+                </div>
+            </div>
+
+            <!-- Sensor Status Grid -->
+            <div class="sensor-grid">
+                <div class="sensor-card">
+                    <div class="sensor-header">
+                        <span>ESP32 STATUS</span>
+                        <i class="fas fa-microchip" id="espIcon" style="color: #888;"></i>
+                    </div>
+                    <div class="sensor-value">
+                        <span id="espStatus">Offline</span>
+                    </div>
+                </div>
+
+                <div class="sensor-card">
+                    <div class="sensor-header">
+                        <span>ULTRASONIC DISTANCE</span>
+                        <i class="fas fa-ruler" style="color: #48bb78;"></i>
+                    </div>
+                    <div class="sensor-value">
+                        <span id="ultrasonicDistance">-- cm</span>
+                        <span class="sensor-status" id="distanceStatus">
+                            <i class="fas fa-signal"></i> Waiting
+                        </span>
+                    </div>
+                </div>
+
+                <div class="sensor-card">
+                    <div class="sensor-header">
+                        <span>RECENT DETECTION</span>
+                        <i class="fas fa-user-check" style="color: #AEBD03;"></i>
+                    </div>
+                    <div style="margin-top: 8px;">
+                        <div style="font-weight: 600;" id="recentDetectionName">--</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);"
+                            id="recentDetectionInfo">Waiting for recognition...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Attendance Stream -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h3>Live Attendance Stream</h3>
+                    <a href="attendance.html"
+                        style="color: #AEBD03; text-decoration: none; font-size: 14px;">View All Logs</a>
+                </div>
+
+                <table class="attendance-table" data-mobile-labels="stream">
+                    <thead>
+                        <tr>
+                            <th>TIME</th>
+                            <th>EVENT</th>
+                            <th>SUBJECT</th>
+                            <th>CONFIDENCE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="liveStreamBody">
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 24px; color: var(--text-secondary);">
+                                Loading activity history...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                <div class="table-footer">
+                    <div id="streamFooterInfo" class="footer-info">Showing 0 entries</div>
+                    <div id="streamPagination" class="pagination"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="supabase-client.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

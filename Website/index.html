@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURORA - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="aurora-logo.png" alt="AURORA">
+            </div>
+
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item active">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="registered.html" class="nav-item">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Registered Faces</span>
+                </a>
+                <a href="attendance.html" class="nav-item">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Attendance</span>
+                </a>
+                <a href="live-feed.html" class="nav-item">
+                    <i class="fas fa-video"></i>
+                    <span>Live Feed</span>
+                </a>
+
+            </nav>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <h2>Dashboard Overview</h2>
+                </div>
+                <div class="header-right">
+                    <div class="current-date">
+                        <div id="currentDate"></div>
+                        <div id="currentDay"></div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card present">
+                    <div class="stat-header">
+                        <span>PRESENT</span>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-value">
+                        <span class="number">--</span>
+                        <span class="percentage positive">
+                            <i class="fas fa-arrow-up"></i> --%
+                        </span>
+                    </div>
+                </div>
+
+                <div class="stat-card absent">
+                    <div class="stat-header">
+                        <span>ABSENT</span>
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-value">
+                        <span class="number">--</span>
+                        <span class="percentage negative">
+                            <i class="fas fa-arrow-down"></i> --%
+                        </span>
+                    </div>
+                </div>
+
+                <div class="stat-card late">
+                    <div class="stat-header">
+                        <span>LATE</span>
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-value">
+                        <span class="number">--</span>
+                        <span class="percentage negative">
+                            <i class="fas fa-arrow-down"></i> --%
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Log -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h3>Today's Attendance Log</h3>
+                    <div class="card-actions">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search name..." id="searchStudent">
+                        </div>
+                        <select class="filter-select" id="dashboardStatusFilter"
+                            style="min-width: 130px; height: 38px;">
+                            <option>All Status</option>
+                            <option>Present</option>
+                            <option>Absent</option>
+                            <option>Late</option>
+                        </select>
+                    </div>
+                </div>
+
+                <table class="attendance-table" data-mobile-labels="dashboard">
+                    <thead>
+                        <tr>
+                            <th>NAME</th>
+                            <th>TIME IN</th>
+                            <th>STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody">
+                        <!-- Populated by Supabase -->
+                    </tbody>
+                </table>
+
+                <div class="table-footer">
+                    <span id="dashFooterInfo">Showing <strong>1-5</strong> of <strong>42</strong> entries</span>
+                    <div class="pagination" id="dashPagination">
+                        <button class="page-btn">&lt;</button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn">...</button>
+                        <button class="page-btn">9</button>
+                        <button class="page-btn">&gt;</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="supabase-client.js"></script>
+    <script src="script.js"></script>
+    <script>
+        (function () {
+            const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            document.getElementById('currentDate').textContent = months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+            document.getElementById('currentDay').textContent = days[now.getDay()];
+        })();
+    </script>
+</body>
+
+</html>

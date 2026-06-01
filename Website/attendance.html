@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURORA - Attendance</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="aurora-logo.png" alt="AURORA">
+            </div>
+
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="registered.html" class="nav-item">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Registered Faces</span>
+                </a>
+                <a href="attendance.html" class="nav-item active">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Attendance</span>
+                </a>
+                <a href="live-feed.html" class="nav-item">
+                    <i class="fas fa-video"></i>
+                    <span>Live Feed</span>
+                </a>
+
+            </nav>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h2>Attendance Records</h2>
+                    <p class="subtitle">View and manage attendance history</p>
+                </div>
+            </div>
+
+            <!-- Attendance Summary -->
+            <div class="stats-grid">
+                <div class="stat-card present">
+                    <div class="stat-header">
+                        <span>TOTAL PRESENT</span>
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-value">
+                        <span class="number">--</span>
+                        <span class="percentage positive">
+                            <i class="fas fa-arrow-up"></i> 12%
+                        </span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+                        vs last month
+                    </div>
+                </div>
+
+                <div class="stat-card absent">
+                    <div class="stat-header">
+                        <span title="All-time absence is not tracked per-record. See daily stats for absent count.">NOT RECORDED</span>
+                        <i class="fas fa-user-clock"></i>
+                    </div>
+                    <div class="stat-value">
+                        <span class="number">N/A</span>
+                        <span class="percentage" style="opacity: 0.4;">
+                            <i class="fas fa-minus"></i> --
+                        </span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+                        see daily stats
+                    </div>
+                </div>
+
+                <div class="stat-card late">
+                    <div class="stat-header">
+                        <span>TOTAL LATE</span>
+                        <i class="fas fa-user-clock"></i>
+                    </div>
+                    <div class="stat-value">
+                        <span class="number">--</span>
+                        <span class="percentage positive">
+                            <i class="fas fa-arrow-down"></i> 8%
+                        </span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+                        vs last month
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Table -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h3>Attendance History</h3>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search name..." id="searchAttendance">
+                        </div>
+                        <button class="btn-filter" id="toggleFilters" onclick="toggleFilters()">
+                            <i class="fas fa-sliders-h"></i> Filters
+                        </button>
+                        <button class="btn-filter" id="exportCsvBtn" onclick="exportAttendanceCsv()">
+                            <i class="fas fa-download"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Expandable Filter Panel -->
+                <div id="filterPanel" class="filter-panel">
+                    <div class="filter-panel-inner">
+                        <div class="filter-group">
+                            <label class="filter-label">Date Range</label>
+                            <select class="filter-select" id="dateRangeSelect" onchange="handleDateRange()">
+                                <option value="all" selected>All Time</option>
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                                <option value="custom">Custom Range</option>
+                            </select>
+                        </div>
+                        <div class="filter-group custom-date-range" id="customDateRange">
+                            <label class="filter-label">From</label>
+                            <input type="date" class="filter-date-input" id="dateFrom">
+                        </div>
+                        <div class="filter-group custom-date-range" id="customDateRangeTo">
+                            <label class="filter-label">To</label>
+                            <input type="date" class="filter-date-input" id="dateTo">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Status</label>
+                            <select class="filter-select" id="statusFilter">
+                                <option>All Status</option>
+                                <option>Present</option>
+                                <option>Absent</option>
+                                <option>Late</option>
+                            </select>
+                        </div>
+                        <div class="filter-group" style="display: flex; align-items: flex-end;">
+                            <button class="btn-primary" style="width: 100%; height: 42px;" onclick="applyFilters()">
+                                <i class="fas fa-check"></i> Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="attendance-table" data-mobile-labels="attendance">
+                    <thead>
+                        <tr>
+                            <th>DATE</th>
+                            <th>NAME</th>
+                            <th>TIME IN</th>
+                            <th>TIME OUT</th>
+                            <th>STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceHistoryBody">
+                        <!-- Populated by Supabase -->
+                    </tbody>
+                </table>
+
+                <div class="table-footer">
+                    <span id="attFooterInfo">Showing <strong>1-5</strong> of <strong>3,835</strong> entries</span>
+                    <div class="pagination" id="attPagination">
+                        <button class="page-btn">&lt;</button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn">...</button>
+                        <button class="page-btn">767</button>
+                        <button class="page-btn">&gt;</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .filter-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+            opacity: 0;
+            border-top: 1px solid transparent;
+        }
+
+        .filter-panel.expanded {
+            max-height: 200px;
+            opacity: 1;
+            border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.06));
+        }
+
+        .filter-panel-inner {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            padding: 20px 24px;
+        }
+
+        .filter-label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-secondary, #a0aec0);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-date-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-tertiary, #1e2533);
+            border: 1px solid var(--border-color, rgba(255, 255, 255, 0.06));
+            border-radius: 8px;
+            color: var(--text-primary, #e2e8f0);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .filter-date-input:focus {
+            border-color: #4299e1;
+        }
+
+        .filter-date-input::-webkit-calendar-picker-indicator {
+            filter: invert(0.7);
+            cursor: pointer;
+        }
+
+        .custom-date-range {
+            display: none;
+        }
+
+        .custom-date-range.visible {
+            display: block;
+        }
+
+        #toggleFilters.active {
+            background: rgba(174, 189, 3, 0.15);
+            color: #AEBD03;
+            border-color: rgba(174, 189, 3, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .filter-panel.expanded {
+                max-height: 520px;
+            }
+
+            .filter-panel-inner {
+                grid-template-columns: 1fr;
+                padding: 16px;
+            }
+        }
+    </style>
+
+    <script>
+        function toggleFilters() {
+            const panel = document.getElementById('filterPanel');
+            const btn = document.getElementById('toggleFilters');
+            panel.classList.toggle('expanded');
+            btn.classList.toggle('active');
+        }
+
+        function handleDateRange() {
+            const sel = document.getElementById('dateRangeSelect').value;
+            const fromGroup = document.getElementById('customDateRange');
+            const toGroup = document.getElementById('customDateRangeTo');
+            if (sel === 'custom') {
+                fromGroup.classList.add('visible');
+                toGroup.classList.add('visible');
+            } else {
+                fromGroup.classList.remove('visible');
+                toGroup.classList.remove('visible');
+            }
+        }
+
+        function applyFilters() {
+            // Handled by script.js
+        }
+
+        async function exportAttendanceCsv() {
+            const btn = document.getElementById('exportCsvBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
+            btn.disabled = true;
+
+            try {
+                // Build filters matching the current UI state
+                const statusSel = document.getElementById('statusFilter');
+                const dateRangeSel = document.getElementById('dateRangeSelect');
+                const dateFrom = document.getElementById('dateFrom');
+                const dateTo = document.getElementById('dateTo');
+                const searchInput = document.getElementById('searchAttendance');
+
+                const filters = {
+                    search: searchInput?.value || '',
+                    status: statusSel?.value || 'All Status'
+                };
+
+                // Date range logic (same as loadAttendance)
+                const dateRange = dateRangeSel?.value || 'all';
+                const now = new Date();
+                const tzOffset = 7 * 60;
+                const local = new Date(now.getTime() + (tzOffset + now.getTimezoneOffset()) * 60000);
+
+                if (dateRange === 'today') {
+                    const todayStr = local.getFullYear() + '-' +
+                        String(local.getMonth() + 1).padStart(2, '0') + '-' +
+                        String(local.getDate()).padStart(2, '0');
+                    filters.date = todayStr;
+                } else if (dateRange === 'week') {
+                    const weekStart = new Date(local);
+                    weekStart.setDate(local.getDate() - local.getDay());
+                    filters.dateFrom = weekStart.getFullYear() + '-' +
+                        String(weekStart.getMonth() + 1).padStart(2, '0') + '-' +
+                        String(weekStart.getDate()).padStart(2, '0');
+                } else if (dateRange === 'month') {
+                    filters.dateFrom = local.getFullYear() + '-' +
+                        String(local.getMonth() + 1).padStart(2, '0') + '-01';
+                } else if (dateRange === 'custom') {
+                    if (dateFrom?.value) filters.dateFrom = dateFrom.value;
+                    if (dateTo?.value) filters.dateTo = dateTo.value;
+                }
+
+                // Fetch ALL matching records (no pagination limit)
+                const { data } = await fetchAttendance(filters);
+
+                if (!data || data.length === 0) {
+                    alert('No records to export.');
+                    return;
+                }
+
+                // Build CSV
+                const csvRows = [];
+                csvRows.push('Date,Name,Time In,Time Out,Status');
+
+                data.forEach(record => {
+                    const date = record.date || '';
+                    const name = (record.name || '').replace(/"/g, '""');
+                    const timeIn = formatTime(record.time);
+                    const timeOut = '--:-- --';
+                    const status = (record.status || '').charAt(0).toUpperCase() + (record.status || '').slice(1);
+                    csvRows.push(`"${date}","${name}","${timeIn}","${timeOut}","${status}"`);
+                });
+
+                const csvContent = csvRows.join('\n');
+                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+
+                // Generate filename with date
+                const dateStr = local.getFullYear() +
+                    String(local.getMonth() + 1).padStart(2, '0') +
+                    String(local.getDate()).padStart(2, '0');
+                const filename = `aurora_attendance_${dateStr}.csv`;
+
+                // Trigger download
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
+
+            } catch (err) {
+                console.error('[Export] CSV export failed:', err);
+                alert('Export failed: ' + err.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+    </script>
+
+    <script src="supabase-client.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

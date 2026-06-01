@@ -1,0 +1,17 @@
+# Server
+fastapi
+uvicorn[standard]
+fastapi-mqtt
+gmqtt
+supabase
+insightface
+onnxruntime-directml
+opencv-python
+numpy
+python-multipart
+python-dotenv
+
+# Desktop client
+customtkinter
+pillow
+websockets

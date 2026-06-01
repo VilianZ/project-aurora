@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURORA - Registered Faces</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="aurora-logo.png" alt="AURORA">
+            </div>
+
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="registered.html" class="nav-item active">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Registered Faces</span>
+                </a>
+                <a href="attendance.html" class="nav-item">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Attendance</span>
+                </a>
+                <a href="live-feed.html" class="nav-item">
+                    <i class="fas fa-video"></i>
+                    <span>Live Feed</span>
+                </a>
+
+            </nav>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h2>Registered Faces</h2>
+            </div>
+
+            <!-- Info Cards -->
+            <div class="info-cards">
+                <div class="info-card">
+                    <div>
+                        <div class="info-value">--</div>
+                        <div class="info-label">Total Registered</div>
+                    </div>
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+
+            <!-- Registered Faces Table -->
+            <div class="content-card">
+                <div class="card-header">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search by name..." id="searchFaces">
+                    </div>
+                </div>
+
+                <table class="attendance-table" data-mobile-labels="registered">
+                    <thead>
+                        <tr>
+                            <th>FULL NAME</th>
+                            <th>REGISTRATION DATE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="facesTableBody">
+                        <!-- Populated by Supabase -->
+                    </tbody>
+                </table>
+
+                <div class="table-footer">
+                    <span id="regFooterInfo">Showing <strong>1</strong> to <strong>5</strong> of <strong>1,248</strong>
+                        results</span>
+                    <div class="pagination" id="regPagination">
+                        <button class="page-btn">&lt;</button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn">...</button>
+                        <button class="page-btn">10</button>
+                        <button class="page-btn">&gt;</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="supabase-client.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
