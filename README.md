@@ -123,9 +123,9 @@ Then update `config.h` with the tunnel URL and set `USE_SSL = true`, `WS_PORT = 
 |---|---|
 | HC-SR04 Trigger | 1 |
 | HC-SR04 Echo | 2 |
-| LED Green | 42 |
-| LED Yellow | 41 |
+| LED Green | 38 |
+| LED Yellow | 39 |
 | LED Red | 40 |
-| Buzzer | 38 |
+| Buzzer | 41 |
 
 Pin assignments can be changed at the top of `AuroraIOT/src/main.cpp`.
