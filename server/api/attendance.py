@@ -17,6 +17,7 @@ async def get_attendance(
     date: Optional[str] = Query(None, description="Filter by date (YYYY-MM-DD)"),
     class_filter: Optional[str] = Query(None, alias="class", description="Filter by class"),
     search: Optional[str] = Query(None, description="Search by name"),
+    status: Optional[str] = Query(None, description="Filter by status (present/late)"),
 ):
     """
     Get attendance records with optional filters.
@@ -29,6 +30,9 @@ async def get_attendance(
         class_filter=class_filter,
         search=search
     )
+    # Apply status filter (not supported by CSV reader, so filter here)
+    if status and status.lower() not in ('all', 'all status'):
+        records = [r for r in records if r.get('status', '').lower() == status.lower()]
     return {"data": records, "count": len(records)}
 
 

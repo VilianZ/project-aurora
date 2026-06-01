@@ -85,8 +85,13 @@ def _recognition_loop():
 
     while _recognition_running:
         try:
-            # Gate: only process when a NEW frame arrives from ESP32
-            # No sensor dependency — AI runs as long as camera is streaming
+            # Gate 1: Skip AI when ultrasonic says nobody is nearby
+            distance = sensor_state.distance_cm
+            if distance is not None and distance > config.SENSOR_DISTANCE_THRESHOLD:
+                time.sleep(0.5)  # No one near — sleep longer to save CPU
+                continue
+
+            # Gate 2: Only process when a NEW frame arrives from ESP32
             current_frame_id = getattr(stream_receiver, 'frame_id', -1)
             if current_frame_id == last_processed_frame_id and current_frame_id >= 0:
                 time.sleep(0.05)  # Wait briefly for new frame
@@ -98,10 +103,10 @@ def _recognition_loop():
                 time.sleep(0.1)
                 continue
 
-            last_processed_frame_id = current_frame_id
-
             # Frame lag check (captured vs processed)
             frame_lag = current_frame_id - last_processed_frame_id if last_processed_frame_id >= 0 else 0
+
+            last_processed_frame_id = current_frame_id
 
             # Run face detection with timing (locked — DirectML is not thread-safe)
             t0 = time.perf_counter()

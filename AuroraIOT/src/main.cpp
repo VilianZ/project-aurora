@@ -386,7 +386,7 @@ bool tryCamera(int xclk_mhz) {
     config.pixel_format = PIXFORMAT_JPEG;
     config.grab_mode    = CAMERA_GRAB_LATEST;    // Always use latest frame (lowest latency)
     config.fb_location  = CAMERA_FB_IN_PSRAM;
-    config.frame_size   = FRAMESIZE_VGA;   // Fixed VGA for showcase
+    config.frame_size   = FRAMESIZE_QVGA;  // Start idle; VGA when person detected by ultrasonic
     config.jpeg_quality = 15;              // Good balance: smaller files, faster transport
     config.fb_count     = 2;               // Continuous DMA mode for higher FPS
 
@@ -428,7 +428,7 @@ bool tryCamera(int xclk_mhz) {
             delay(100);
             config.pixel_format = PIXFORMAT_JPEG;
             if (psramFound()) {
-                config.frame_size   = FRAMESIZE_VGA;  // Fixed VGA
+                config.frame_size   = FRAMESIZE_QVGA;  // Start idle; VGA when triggered
                 config.jpeg_quality = 10;
                 config.fb_count     = 2;
                 config.fb_location  = CAMERA_FB_IN_PSRAM;
@@ -827,8 +827,8 @@ void loop() {
 
             if (currentDistance <= DISTANCE_THRESHOLD) {
                 if (!highResActive) {
-                    Serial.printf("[SENSOR] Person at %.1f cm → PENDING\n", currentDistance);
-                    // Resolution switching disabled for showcase (always VGA)
+                    Serial.printf("[SENSOR] Person at %.1f cm → VGA + PENDING\n", currentDistance);
+                    setResolution(FRAMESIZE_VGA);
                     highResActive = true;
                     systemState = STATE_PENDING;  // Yellow LED ON
                 }
@@ -840,8 +840,8 @@ void loop() {
 
     // 4. Return to low-res after hold timer expires
     if (highResActive && (now - lastTriggerTime > HOLD_DURATION)) {
-        Serial.println("[SENSOR] No activity → IDLE");
-        // Resolution switching disabled for showcase (always VGA)
+        Serial.println("[SENSOR] No activity → QVGA + IDLE");
+        setResolution(FRAMESIZE_QVGA);
         highResActive = false;
 
         if (systemState != STATE_SUCCESS && systemState != STATE_ERROR) {

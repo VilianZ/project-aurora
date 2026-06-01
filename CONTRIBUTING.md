@@ -34,7 +34,7 @@ Open an issue with the `enhancement` label. Describe:
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-username/project-aurora.git
+git clone https://github.com/VilianZ/project-aurora.git
 cd project-aurora
 
 # Create a virtual environment (recommended)
