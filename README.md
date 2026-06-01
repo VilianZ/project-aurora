@@ -8,6 +8,8 @@
 
 An AI-powered face recognition attendance system built with an ESP32-S3 camera, a FastAPI backend, and InsightFace with DirectML GPU acceleration. Point the camera, and it handles the rest — detect, recognize, and log attendance automatically.
 
+🌐 **Live Demo:** [projectaurora.web.id](https://projectaurora.web.id)
+
 ---
 
 ## ✨ Features
